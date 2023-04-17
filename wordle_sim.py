@@ -1,3 +1,4 @@
+import sys
 from enum import Enum
 import random
 
@@ -275,3 +276,11 @@ class Robot:
             knowledge_bank.gain_knowledge(guess, score)
             word_pool = word_pool.apply_filter(knowledge_bank.make_filter())
         return (result, history)
+
+if __name__ == '__main__':
+    if len(sys.argv) <= 1:
+        sys.stderr.write("Usage: {} <word-to-solve>".format(sys.argv[0]))
+    word_pool = WordPool()
+    puzzle = Puzzle(sys.argv[1])
+    robot = Robot(word_pool)
+    robot.solve(puzzle, verbose=True)
