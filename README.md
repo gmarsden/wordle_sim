@@ -31,6 +31,7 @@ The available word pools are:
 | Class | Description |
 | ----- | ----------- |
 | SimpleWordPool | A large list of 5-letter words. Words are chosen uniformly. |
+| SyntheticWordPool | A pool that is the same size as SimpleWordPool, but made of of random character strings. |
 
 ## wordle_sim
 

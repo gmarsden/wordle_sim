@@ -1,4 +1,7 @@
 import random
+import string
+
+source_file = "words_freq.txt"
 
 ### UTILITIES
 # currently ignores frequency data
@@ -57,10 +60,22 @@ class WordPool:
         return new_pool
 
 class SimpleWordPool(WordPool):
-    _source_file = "words_freq.txt"
     def __init__(self, empty=False):
-        # weird interface for now... fix up later
         if empty:
-            self._set_word_list([])
+            WordPool.__init__(self)
         else:
-            self._set_word_list(read_word_data(self._source_file))
+            self._set_word_list(read_word_data(source_file))
+
+class SyntheticWordPool(WordPool):
+    "Create pool that's the same size as SimpleWordPool, but all words are random combinations of letters."
+    letters = string.ascii_lowercase
+    def __init__(self, empty=False):
+        if empty:
+            WordPool.__init__(self)
+        else:
+            dict_words = read_word_data(source_file)
+            self._word_len = len(dict_words[0])
+            self._word_list = []
+            for i in range(len(dict_words)):
+                random_word = ''.join([random.choice(self.letters) for i in range(self._word_len)])
+                self._word_list.append(random_word)
