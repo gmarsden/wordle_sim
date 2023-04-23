@@ -1,17 +1,34 @@
 # WordleSim
 
-WordleSim provides utilities for simulating a Wordle game. There are
-three main classes that support the simulation:
+WordleSim provides utilities for simulating a Wordle game. It provides
+two modules, `word_pool` and `wordle_sim`.
 
-1. WordPool
-2. Puzzle
-3. Robot
+## word_pool
 
-as well as these helper classes `WordScore` and `LetterScore`.
+The `word_pool` module provides th class `WordPool`, which provides
+these methods:
 
+| Method | Arguments | Description |
+| ------ | --------- | ----------- |
+| size   | none      | Return number of words in the pool |
+| pick   | none      | Return a word from the pool |
+| word_length | none | Return length of words in pool |
+| apply_filter | function | Return a new WordPool based on `this` where the word list has been filtered by `function`. The function should take a word as input and return `True` or `False`, depending on whether or not the word should be included |
 
-`WordPool` contains a list of possible 5-letter words. It provides
-the method `pick`, which returns a random word from the pool.
+The class also supports iteration for listing all of the words in the
+pool:
+
+```
+pool = WordPool()
+for word in pool:
+    print(word)
+```
+
+## wordle_sim
+
+The wordle_sim module provides two classes `Puzzle` and `Robot`, as
+well as these helper classes `WordScore` and `LetterScore`.
+
 
 `Puzzle` provides an instance of a Wordle puzzle. It is initialized
 with a solution and provides the method `guess`, which takes a word
@@ -42,12 +59,13 @@ respectively.
 ## Example
 
 ```
-import wordle_sim as w
+import word_pool as wp
+import wordle_sim as sim
 
-word_pool = w.WordPool()
-puzzle = w.Puzzle(sys.argv[1])
-robot = w.Robot(word_pool)
-robot.solve(puzzle, verbose=True)
+pool = wp.WordPool()
+puzzle = sim.Puzzle(pool)
+robot = sim.Robot(pool)
+robot.solve(puzzle)
 ```
 
 Here is a sample output:
