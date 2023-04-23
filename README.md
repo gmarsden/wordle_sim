@@ -5,15 +5,17 @@ two modules, `word_pool` and `wordle_sim`.
 
 ## word_pool
 
-The `word_pool` module provides th class `WordPool`, which provides
-these methods:
+The `word_pool` module provides a base class `WordPool` and several
+derived classes that implement the WordPool interface.
+
+WordPool classes provide these methods:
 
 | Method | Arguments | Description |
 | ------ | --------- | ----------- |
-| size   | none      | Return number of words in the pool |
-| pick   | none      | Return a word from the pool |
+| size | none | Return number of words in the pool |
+| pick | none | Return a word from the pool |
 | word_length | none | Return length of words in pool |
-| apply_filter | function | Return a new WordPool based on `this` where the word list has been filtered by `function`. The function should take a word as input and return `True` or `False`, depending on whether or not the word should be included |
+|apply_filter | function | Return a new WordPool based on `this` where the word list has been filtered by `function`. The function should take a word as input and return `True` or `False`, depending on whether or not the word should be included |
 
 The class also supports iteration for listing all of the words in the
 pool:
@@ -23,6 +25,12 @@ pool = WordPool()
 for word in pool:
     print(word)
 ```
+
+The available word pools are:
+
+| Class | Description |
+| ----- | ----------- |
+| SimpleWordPool | A large list of 5-letter words. Words are chosen uniformly. |
 
 ## wordle_sim
 
@@ -62,7 +70,7 @@ respectively.
 import word_pool as wp
 import wordle_sim as sim
 
-pool = wp.WordPool()
+pool = wp.SimpleWordPool()
 puzzle = sim.Puzzle(pool)
 robot = sim.Robot(pool)
 robot.solve(puzzle)
@@ -74,8 +82,8 @@ Here is a sample output:
 (True, [('jutes', False, BBBGB),
         ('armed', False, BYBGB),
         ('inker', False, BYBGG),
-        ('never', False, GGBGG),
-        ('newer', True, GGGGG)])
+	('never', False, GGBGG),
+	('newer', True, GGGGG)])
 ```
         
 ## How the robot works
