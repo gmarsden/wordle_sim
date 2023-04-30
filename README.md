@@ -32,6 +32,8 @@ The available word pools are:
 | ----- | ----------- |
 | SimpleWordPool | A large list of 5-letter words. Words are chosen uniformly. |
 | SyntheticWordPool | A pool that is the same size as SimpleWordPool, but made of of random character strings. |
+| WeightedWordPool | Like SimpleWordPool, but pick() weights towards common words |
+| CommonWordPool | Like SimpleWordPool, but only the 2000 most common words |
 
 ## wordle_sim
 
@@ -67,6 +69,8 @@ respectively.
 
 ## Example
 
+Here is a simple example using the simple word pool:
+
 ```
 import word_pool as wp
 import wordle_sim as sim
@@ -86,7 +90,7 @@ Here is a sample output:
 	('never', False, GGBGG),
 	('newer', True, GGGGG)])
 ```
-        
+
 ## How the robot works
 
 The robot is not "smart". It doesn't imploy any strategy to find the

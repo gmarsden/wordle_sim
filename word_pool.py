@@ -1,17 +1,25 @@
 import random
 import string
+from itertools import accumulate
+from numpy import searchsorted
 
 source_file = "words_freq.txt"
 
 ### UTILITIES
 # currently ignores frequency data
-def read_word_data(file):
+def read_word_data(file, get_freqs=False):
     data = []
+    freqs = []
     with open(file) as f:
         for line in f.readlines():
             words = line.split()
             data.append(words[0])
-    return data
+            if get_freqs:
+                freqs.append(float(words[1]))
+    if get_freqs:
+        return (data, freqs)
+    else:
+        return data
 
 ## WordPool base class
 # Instantiating this directly will not be useful, since the pool is empty
@@ -27,7 +35,7 @@ class WordPool:
     def _set_word_list(self, list):
         self._word_list = list
         if len(list) > 0:
-            self._word_len = len(list[0])
+            self._word_len = len(self._get_word(list[0]))
 
     def _get_word(self, item):
         "Accessor to extra word from element of word_list"
@@ -49,14 +57,16 @@ class WordPool:
 
     def pick(self):
         "Pick random word from list"
+        if len(self._word_list) == 0:
+            raise ValueError("No words in pool!")
         return self._get_word(random.choice(self._word_list))
     
     def apply_filter(self, filter_func):
         """Return new pool that has been filtered by filter_func.
 
         'filter_func' should take a word and return True if the word is accepted."""
-        new_pool = WordPool(empty=True)
-        new_pool._word_list = [x for x in self._word_list if filter_func(self._get_word(x))]
+        new_pool = self.__class__(empty=True)
+        new_pool._set_word_list([x for x in self._word_list if filter_func(self._get_word(x))])
         return new_pool
 
 class SimpleWordPool(WordPool):
@@ -79,3 +89,43 @@ class SyntheticWordPool(WordPool):
             for i in range(len(dict_words)):
                 random_word = ''.join([random.choice(self.letters) for i in range(self._word_len)])
                 self._word_list.append(random_word)
+
+class WeightedWordPool(WordPool):
+    "Create a pool of words where the 'pick' method is weighted towards common words."
+    def __init__(self, empty=False):
+        if empty:
+            WordPool.__init__(self)
+        else:
+            # word list is list of (word, freq) data
+            words_and_freqs = read_word_data(source_file, get_freqs=True)
+            self._set_word_list(list(zip(*words_and_freqs)))
+
+    def _set_word_list(self, words_and_freqs):
+        # call default method, then calculte cdf
+        WordPool._set_word_list(self, words_and_freqs)
+        if len(words_and_freqs) > 0:
+            self._word_cdf = list(accumulate([x[1] for x in words_and_freqs]))
+            self._cdf_max = self._word_cdf[-1]
+
+    def _get_word(self, item):
+        # return the first element of the stored tuple
+        return item[0]
+
+    def pick(self):
+        if len(self._word_list) == 0:
+            raise ValueError("No words in pool!")
+        rand = random.random() * self._cdf_max
+        index = searchsorted(self._word_cdf, rand)
+        return self._get_word(self._word_list[index])
+
+class CommonWordPool(SimpleWordPool):
+    "Create a simple word pool with only common words."
+    num_words = 2000
+    def __init__(self, empty=False):
+        if empty:
+            WordPool.__init__(self)
+        else:
+            full_sorted_list = sorted(read_word_data(source_file),
+                                      key=lambda x: x[1],
+                                      reverse=True)
+            self._set_word_list(full_sorted_list[:self.num_words])
