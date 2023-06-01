@@ -224,7 +224,7 @@ class Robot:
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
         sys.stderr.write("Usage: {} <word-to-solve>".format(sys.argv[0]))
-    word_pool = WordPool()
+    word_pool = wp.SimpleWordPool()
     puzzle = Puzzle(sys.argv[1])
-    robot = Robot(wp.word_pool)
+    robot = Robot(word_pool)
     robot.solve(puzzle, verbose=True)

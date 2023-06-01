@@ -21,7 +21,7 @@ The class also supports iteration for listing all of the words in the
 pool:
 
 ```
-pool = WordPool()
+pool = SimpleWordPool()
 for word in pool:
     print(word)
 ```
