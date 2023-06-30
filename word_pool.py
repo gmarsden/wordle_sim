@@ -55,6 +55,9 @@ class WordPool:
     def word_length(self):
         return self._word_len
 
+    def word_list(self):
+        return [self._get_word(item) for item in self._word_list]
+
     def pick(self):
         "Pick random word from list"
         if len(self._word_list) == 0:
