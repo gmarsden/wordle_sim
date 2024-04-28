@@ -105,6 +105,15 @@ class SyntheticWordPool(WordPool):
                 random_word = ''.join([random.choice(self.letters) for i in range(self._word_len)])
                 self._word_list.append(random_word)
 
+class ScrambledWordPool(SimpleWordPool):
+    "Word pool based on Simple word pool, but with letters in each word scrambled"
+    def __init__(self, empty=False):
+        SimpleWordPool.__init__(self)
+        for i in range(len(self._word_list)):
+            chars = list(self._word_list[i])
+            random.shuffle(chars)
+            self._word_list[i] = ''.join(chars)
+
 class WeightedWordPool(WordPool):
     "Create a pool of words where the 'pick' method is weighted towards common words."
     def __init__(self, empty=False):

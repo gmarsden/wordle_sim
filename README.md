@@ -31,6 +31,7 @@ The available word pools are:
 | Class | Description |
 | ----- | ----------- |
 | SimpleWordPool | A large list of 5-letter words. Words are chosen uniformly. |
+| ScrambledWordPool | Same as SimpleWordPool but order of letters is scrambled. |
 | SyntheticWordPool | A pool that is the same size as SimpleWordPool, but made of of random character strings. |
 | WeightedWordPool | Like SimpleWordPool, but pick() weights towards common words |
 | CommonWordPool | Like SimpleWordPool, but only the 2000 most common words |
@@ -94,11 +95,11 @@ Here is a sample output:
 
 ## How the robot works
 
-The robot is not "smart". It doesn't imploy any strategy to find the
+The robot is not "smart". It doesn't employ any strategy to find the
 answer quickly. It doesn't look for common letter patterns, track
 history from puzzle to puzzle, or choose words to eliminate as many
 letters as possible. All it does is filter the word list based on the
-knowledge it's gained, and choose a word from those possibilites.
+knowledge it's gained, and choose a word from those possibilities.
 
 Also note that since it doesn't remember knowledge from puzzle to
 puzzle, it can be used to solve the same puzzle many times, each time
