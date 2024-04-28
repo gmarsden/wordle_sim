@@ -1,5 +1,6 @@
 import random
 import string
+import copy
 from itertools import accumulate
 from numpy import searchsorted
 
@@ -37,6 +38,11 @@ class WordPool:
         if len(list) > 0:
             self._word_len = len(self._get_word(list[0]))
 
+    def _copy(self):
+        local = self.__class__()
+        local._set_word_list(copy.deepcopy(self._word_list))
+        return local
+
     def _get_word(self, item):
         "Accessor to extra word from element of word_list"
         # default is that item is the word itself
@@ -63,7 +69,13 @@ class WordPool:
         if len(self._word_list) == 0:
             raise ValueError("No words in pool!")
         return self._get_word(random.choice(self._word_list))
-    
+
+    def pick_n(self, n):
+        "Pick `n` random words from list"
+        if (len(self._word_list) < n):
+            raise ValueError("Only {} words in pool, can't pick {}".format(len(self._word_list), n))
+        return self._get_word(random.sample(self._word_list, n))
+
     def apply_filter(self, filter_func):
         """Return new pool that has been filtered by filter_func.
 
@@ -104,11 +116,19 @@ class WeightedWordPool(WordPool):
             self._set_word_list(list(zip(*words_and_freqs)))
 
     def _set_word_list(self, words_and_freqs):
-        # call default method, then calculte cdf
+        # call default method, then calculate cdf
         WordPool._set_word_list(self, words_and_freqs)
         if len(words_and_freqs) > 0:
             self._word_cdf = list(accumulate([x[1] for x in words_and_freqs]))
             self._cdf_max = self._word_cdf[-1]
+
+    def _copy(self):
+        #local = WeightedWordPool(empty=True)
+        local = WordPool._copy(self)
+        print(local.__class__)
+        local._word_cdf = copy.deepcopy(self._word_cdf)
+        local._cdf_max = self._cdf_max
+        return local
 
     def _get_word(self, item):
         # return the first element of the stored tuple
@@ -120,6 +140,22 @@ class WeightedWordPool(WordPool):
         rand = random.random() * self._cdf_max
         index = searchsorted(self._word_cdf, rand)
         return self._get_word(self._word_list[index])
+
+    def pick_n(self, n):
+        # algorithm:
+        #   1) create local pool, initialized with self._word_list
+        #   2) use `pick` to draw word
+        #   3) set local pool to local._word_list with word removed
+        #   4) repeat from (2) until we have the right number of words
+        local_pool = self._copy()
+        words = []
+        while True:
+            new_word = local_pool.pick()
+            words.append(new_word)
+            if len(words) == n:
+                break
+            local_pool._set_word_list(list(filter(lambda x: x[0] != new_word, local_pool._word_list)))
+        return words
 
 class CommonWordPool(SimpleWordPool):
     "Create a simple word pool with only common words."

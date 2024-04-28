@@ -76,7 +76,8 @@ import word_pool as wp
 import wordle_sim as sim
 
 pool = wp.SimpleWordPool()
-puzzle = sim.Puzzle(pool)
+solution = pool.pick()
+puzzle = sim.Puzzle(solution)
 robot = sim.Robot(pool)
 robot.solve(puzzle)
 ```

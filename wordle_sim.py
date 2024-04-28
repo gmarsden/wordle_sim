@@ -81,7 +81,8 @@ class Puzzle:
             
     def guess(self, word):
         "Returns two values, whether or not the guess is correct and a word score"
-        len(word) == self._len or error("guess is wrong length")
+        if len(word) != self._len:
+            raise ValueError("guess is wrong length")
         result = (self._solution == word)
         return (result, self._score_guess(word))
 
