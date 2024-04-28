@@ -104,3 +104,26 @@ knowledge it's gained, and choose a word from those possibilities.
 Also note that since it doesn't remember knowledge from puzzle to
 puzzle, it can be used to solve the same puzzle many times, each time
 as if it's the first time it's seen it.
+
+## All Greens
+
+The purpose of writing this library was to investigate the observation that 
+"all greens" -- that is, solutions where no yellows were ever found -- seem 
+to be more common than would be expected. The "utilities" library includes a 
+function `run_simulation` that uses the robot to run a number of simulations,
+counting the number of times "all greens" occurred. One can then run 
+simulations with a variety of word pools and determine whether the choice of 
+pool has an effect on the frequency of occurrence. For example:
+
+```commandline
+import utilities as util
+
+pool = wp.SimpleWordPool()
+robot = sim.Robot(pool)
+results = util.run_simulation(robot, pool, 10, 100)
+```
+
+This picks 10 words from the pool and has the robot solve each 100 times. 
+The return value `results` will be a list of `(word, count)` tuples 10 items 
+long indicating the word used and the number of times the "all greens" 
+condition was found for each word.
