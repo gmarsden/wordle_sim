@@ -32,6 +32,19 @@ def is_history_all_greens(history):
                 return False
     return True
 
+def run_puzzle(robot: sim.Robot, puzzle: sim.Puzzle, num_attempts):
+    """
+    Solve `puzzle` using `robot` `num_attempts` times.
+    """
+    count = 0
+    for i in range(num_attempts):
+        solved,history = robot.solve(puzzle)
+        if not solved:
+            raise ValueError("robot failed to solve puzzle!")
+        if is_history_all_greens(history):
+            count += 1
+    return count
+
 def run_simulation(robot: sim.Robot, pool: wp.WordPool, num_puzzles, num_attempts):
     """
     Draw `num_puzzles` words from `pool` and solve each `num_attempts` times using `robot`.
@@ -43,13 +56,7 @@ def run_simulation(robot: sim.Robot, pool: wp.WordPool, num_puzzles, num_attempt
     for word in words:
         word_count += 1
         puzzle = sim.Puzzle(word)
-        count = 0
         print(f"Sim {word_count}/{num_puzzles}: {word}")
-        for i in range(num_attempts):
-            solved,history = robot.solve(puzzle)
-            if not solved:
-                raise ValueError("robot failed to solve puzzle!")
-            if is_history_all_greens(history):
-                count += 1
+        count = run_puzzle(robot, puzzle, num_attempts)
         result.append((word, count))
     return result
