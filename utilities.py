@@ -1,5 +1,6 @@
 import word_pool as wp
 import wordle_sim as sim
+import pickle
 
 def build_word_score(score_string):
     'Build a WordScore from string listing b,g,y for each letter'
@@ -68,3 +69,13 @@ def run_simulation(robot: sim.Robot, pool: wp.WordPool, num_puzzles, num_attempt
         "data": data
     }
     return results
+
+def save_results(results, filetag="sim"):
+    filename = f"wordlebot_{filetag}.pkl"
+    with open(filename, 'wb') as fh:
+        pickle.dump(results, fh)
+    print(f"Saved results to '{filename}'")
+
+def load_results(filename):
+    with open(filename, 'rb') as fh:
+        return pickle.load(fh)
