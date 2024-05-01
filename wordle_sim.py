@@ -2,12 +2,12 @@ import sys
 from enum import Enum
 import word_pool as wp
 
-### Helper classes
+# Helper classes
 class PositionFact(Enum):
     NO_INFO = 0
     HERE = 1
     NOT_HERE = 2
-    
+
 class LetterScore(Enum):
     BLACK = 0
     YELLOW = 1
@@ -17,33 +17,42 @@ class LetterScore(Enum):
 class WordScore:
     def __init__(self, size):
         self._score = [LetterScore.UNKNOWN] * size
+
     def __repr__(self):
         return "".join([x.name[0] for x in self._score])
+
     def _check_range(self, i):
-        if i<0 or i>=len(self._score):
+        if i < 0 or i >= len(self._score):
             raise Exception("Bad index for Score.get")
+
     def size(self):
         return len(self._score)
+
     def get(self, i):
         self._check_range(i)
         return self._score[i]
+
     def get_all(self):
         return self._score
+
     def set(self, i, value):
         self._check_range(i)
         self._score[i] = value
-    
-## A mini helper-class for counting letter occurrences
+
+# A mini helper-class for counting letter occurrences
 class LetterCount:
     def __init__(self, word=""):
         self._count = {}
         for l in word:
             self.add(l)
+
     def add(self, letter):
         self._count[letter] = self._count.get(letter, 0) + 1
+
     def get(self, letter):
         return self._count.get(letter, 0)
-    
+
+
 ## Puzzle class lets player check a word
 # a score is a N-length list where each element indicated correctness of letter:
 #  - 0: letter is not found in puzzle (black)
@@ -78,7 +87,7 @@ class Puzzle:
             else:
                 score.set(i, LetterScore.YELLOW)
         return score
-            
+
     def guess(self, word):
         "Returns two values, whether or not the guess is correct and a word score"
         if len(word) != self._len:
@@ -107,7 +116,7 @@ class Knowledge:
 
     def add_fact(self, position, score):
         "Add a new fact to Knowledge. 'score' is LetterScore as reported by Puzzle"
-        assert position >=0 and position < self._len
+        assert position >= 0 and position < self._len
         if score == LetterScore.BLACK:
             self._limited = True
             self._positions[position] = PositionFact.NOT_HERE
@@ -131,7 +140,7 @@ class Knowledge:
             else:
                 # should already known, new knowledge should be unknown or should agree
                 assert new_knowledge._positions[i] == PositionFact.NO_INFO or \
-                    new_knowledge._positions[i] == self._positions[i]
+                       new_knowledge._positions[i] == self._positions[i]
 
     def apply_knowledge(self, letter, word):
         "Test knowledge on 'letter' in 'word'"
@@ -143,15 +152,15 @@ class Knowledge:
         elif letter_count < self._count:
             result = False
         else:
-            for l,p in zip(word, self._positions):
+            for l, p in zip(word, self._positions):
                 if p == PositionFact.HERE and l != letter:
                     result = False
-                    break;
+                    break
                 elif p == PositionFact.NOT_HERE and l == letter:
                     result = False
-                    break;
+                    break
         return result
-                
+
 ## KnowledgeBank class tracks all information player has acquired
 ## KnowledgeBank is dictionary of Knowledge about letters
 class KnowledgeBank:
@@ -161,14 +170,14 @@ class KnowledgeBank:
 
     def _build_new_knowledge(self, word, score):
         new_knowledge_bank = {}
-        for index, (letter,fact) in enumerate(zip(word, score.get_all())):
+        for index, (letter, fact) in enumerate(zip(word, score.get_all())):
             new_knowledge = new_knowledge_bank.get(letter, Knowledge(self._len))
             new_knowledge.add_fact(index, fact)
             new_knowledge_bank[letter] = new_knowledge
         return new_knowledge_bank
 
     def _integrate_new_knowledge_bank(self, new_knowledge_bank):
-        for letter,new_knowledge in new_knowledge_bank.items():
+        for letter, new_knowledge in new_knowledge_bank.items():
             if letter in self._bank:
                 self._bank[letter].integrate_new_knowledge(new_knowledge)
             else:
@@ -182,12 +191,12 @@ class KnowledgeBank:
         self._integrate_new_knowledge_bank(new_knowledge_bank)
 
     def _filter(self, word):
-        return all([k.apply_knowledge(l, word) for l,k in self._bank.items()])
-            
+        return all([k.apply_knowledge(l, word) for l, k in self._bank.items()])
+
     def make_filter(self):
         "Return a filter for to apply Knowledge"
         return self._filter
-        
+
 ## Robot (player) tries to solve a puzzle
 # it will make guesses and gain knowledge
 # has access to a pool of words
@@ -204,7 +213,7 @@ class Robot:
         result, score = puzzle.guess(guess)
         bank.gain_knowledge(guess, score)
         return (result, score)
-        
+
     def solve(self, puzzle, verbose=False):
         knowledge_bank = KnowledgeBank(self._pool.word_length())
         word_pool = self._pool
@@ -213,7 +222,7 @@ class Robot:
             guess = word_pool.pick()
             if verbose:
                 print("{} words in pool".format(word_pool.size()))
-                print("Guess {}: '{}'".format(len(history)+1, guess))
+                print("Guess {}: '{}'".format(len(history) + 1, guess))
             result, score = puzzle.guess(guess)
             if verbose: print("Result: {}, Score: {}".format(result, score))
             history.append((guess, result, score))

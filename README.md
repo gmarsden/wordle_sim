@@ -33,7 +33,7 @@ The available word pools are:
 | SimpleWordPool | A large list of 5-letter words. Words are chosen uniformly. |
 | ScrambledWordPool | Same as SimpleWordPool but order of letters is scrambled. |
 | SyntheticWordPool | A pool that is the same size as SimpleWordPool, but made of of random character strings. |
-| WeightedWordPool | Like SimpleWordPool, but pick() weights towards common words |
+| WeightedWordPool | Like SimpleWordPool, but `pick()` weights towards common words |
 | CommonWordPool | Like SimpleWordPool, but only the 2000 most common words |
 
 ## wordle_sim

@@ -3,7 +3,7 @@ import wordle_sim as sim
 import pickle
 
 def build_word_score(score_string):
-    'Build a WordScore from string listing b,g,y for each letter'
+    """Build a WordScore from string listing b,g,y for each letter"""
     score = sim.WordScore(len(score_string))
     for i,s in enumerate(score_string):
         if s == "b":
@@ -25,8 +25,7 @@ def get_possible_words(word, score_string):
     return poss.word_list()
 
 def is_history_all_greens(history):
-    '''Analyze history returned by robot.Solve() to determine if there are any yellows'''
-    num_guesses = len(history)
+    """Analyze history returned by robot.Solve() to determine if there are any yellows"""
     for guess,is_correct,score in history:
         for letter_score in score.get_all():
             if letter_score == sim.LetterScore.YELLOW:
@@ -52,10 +51,8 @@ def run_simulation(robot: sim.Robot, pool: wp.WordPool, num_puzzles, num_attempt
     """
     data = []
     words = pool.pick_n(num_puzzles)
-    word_count = 0
     for word_count,word in enumerate(words):
         puzzle = sim.Puzzle(word)
-        stats = []
         print(f"Sim {word_count+1}/{num_puzzles}: {word}")
         stats = run_puzzle(robot, puzzle, num_attempts)
         data.append((word, stats))

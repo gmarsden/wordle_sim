@@ -18,7 +18,7 @@ def read_word_data(file, get_freqs=False):
             if get_freqs:
                 freqs.append(float(words[1]))
     if get_freqs:
-        return (data, freqs)
+        return data, freqs
     else:
         return data
 
@@ -33,10 +33,10 @@ class WordPool:
     def __init__(self, empty=False):
         self._set_word_list([])
 
-    def _set_word_list(self, list):
-        self._word_list = list
-        if len(list) > 0:
-            self._word_len = len(self._get_word(list[0]))
+    def _set_word_list(self, wlist):
+        self._word_list = wlist
+        if len(wlist) > 0:
+            self._word_len = len(self._get_word(wlist[0]))
 
     def _copy(self):
         local = self.__class__()
@@ -44,7 +44,7 @@ class WordPool:
         return local
 
     def _get_word(self, item):
-        "Accessor to extra word from element of word_list"
+        """Accessor to extra word from element of word_list"""
         # default is that item is the word itself
         return item
 
@@ -68,14 +68,14 @@ class WordPool:
         return [self._get_word(item) for item in self._word_list]
 
     def pick(self):
-        "Pick random word from list"
+        """Pick random word from list"""
         if len(self._word_list) == 0:
             raise ValueError("No words in pool!")
         return self._get_word(random.choice(self._word_list))
 
     def pick_n(self, n):
-        "Pick `n` random words from list"
-        if (len(self._word_list) < n):
+        """Pick `n` random words from list"""
+        if len(self._word_list) < n:
             raise ValueError("Only {} words in pool, can't pick {}".format(len(self._word_list), n))
         return self._get_word(random.sample(self._word_list, n))
 
@@ -95,7 +95,7 @@ class SimpleWordPool(WordPool):
             self._set_word_list(read_word_data(source_file))
 
 class SyntheticWordPool(WordPool):
-    "Create pool that's the same size as SimpleWordPool, but all words are random combinations of letters."
+    """Create pool that's the same size as SimpleWordPool, but all words are random combinations of letters."""
     letters = string.ascii_lowercase
     def __init__(self, empty=False):
         if empty:
@@ -109,16 +109,16 @@ class SyntheticWordPool(WordPool):
                 self._word_list.append(random_word)
 
 class ScrambledWordPool(SimpleWordPool):
-    "Word pool based on Simple word pool, but with letters in each word scrambled"
+    """Word pool based on Simple word pool, but with letters in each word scrambled"""
     def __init__(self, empty=False):
-        SimpleWordPool.__init__(self)
+        SimpleWordPool.__init__(self, empty)
         for i in range(len(self._word_list)):
             chars = list(self._word_list[i])
             random.shuffle(chars)
             self._word_list[i] = ''.join(chars)
 
 class WeightedWordPool(WordPool):
-    "Create a pool of words where the 'pick' method is weighted towards common words."
+    """Create a pool of words where the 'pick' method is weighted towards common words."""
     def __init__(self, empty=False):
         if empty:
             WordPool.__init__(self)
@@ -135,7 +135,6 @@ class WeightedWordPool(WordPool):
             self._cdf_max = self._word_cdf[-1]
 
     def _copy(self):
-        #local = WeightedWordPool(empty=True)
         local = WordPool._copy(self)
         print(local.__class__)
         local._word_cdf = copy.deepcopy(self._word_cdf)
@@ -170,7 +169,7 @@ class WeightedWordPool(WordPool):
         return words
 
 class CommonWordPool(SimpleWordPool):
-    "Create a simple word pool with only common words."
+    """Create a simple word pool with only common words."""
     num_words = 2000
     def __init__(self, empty=False):
         if empty:
