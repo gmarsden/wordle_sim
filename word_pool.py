@@ -54,7 +54,10 @@ class WordPool:
     
     def __next__(self):
         return self._get_word(next(self._iter))
-    
+
+    def name(self):
+        return self.__class__.__name__
+
     def size(self):
         return len(self._word_list)
     

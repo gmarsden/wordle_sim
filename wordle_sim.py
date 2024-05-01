@@ -195,6 +195,9 @@ class Robot:
     def __init__(self, pool):
         self._pool = pool
 
+    def poolName(self):
+        return self._pool.name()
+
     def _make_guess(self, puzzle, pool, bank):
         "Make a guess drawn from pool and gain knowledge"
         guess = pool.pick()

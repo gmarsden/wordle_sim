@@ -36,27 +36,35 @@ def run_puzzle(robot: sim.Robot, puzzle: sim.Puzzle, num_attempts):
     """
     Solve `puzzle` using `robot` `num_attempts` times.
     """
-    count = 0
+    stats = []
     for i in range(num_attempts):
         solved,history = robot.solve(puzzle)
         if not solved:
             raise ValueError("robot failed to solve puzzle!")
-        if is_history_all_greens(history):
-            count += 1
-    return count
+        stats.append((len(history), is_history_all_greens(history)))
+    return stats
 
 def run_simulation(robot: sim.Robot, pool: wp.WordPool, num_puzzles, num_attempts):
     """
     Draw `num_puzzles` words from `pool` and solve each `num_attempts` times using `robot`.
     Count how many times we achieve "all greens", that is a history with no yellow words.
     """
-    result = []
+    data = []
     words = pool.pick_n(num_puzzles)
     word_count = 0
-    for word in words:
-        word_count += 1
+    for word_count,word in enumerate(words):
         puzzle = sim.Puzzle(word)
-        print(f"Sim {word_count}/{num_puzzles}: {word}")
-        count = run_puzzle(robot, puzzle, num_attempts)
-        result.append((word, count))
-    return result
+        stats = []
+        print(f"Sim {word_count+1}/{num_puzzles}: {word}")
+        stats = run_puzzle(robot, puzzle, num_attempts)
+        data.append((word, stats))
+
+    results = {
+        "robot_pool": robot.poolName(),
+        "pool": pool.name(),
+        "words": words,
+        "num_puzzles": num_puzzles,
+        "num_attempts": num_attempts,
+        "data": data
+    }
+    return results
